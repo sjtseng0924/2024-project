@@ -21,3 +21,64 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Python相關
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.so
+
+# 環境變數和配置
+.env
+*.env
+*.local
+*.log
+
+# Virtualenv
+/venv/
+/env/
+/ENV/
+/venv.bak/
+/.venv/
+
+# Django Migrations
+**/migrations/*
+!**/migrations/__init__.py
+
+# 資料庫檔案
+*.sqlite3
+
+# 靜態和媒體文件
+/staticfiles/
+/media/
+/static/
+/node_modules/
+
+# IDE/編輯器設定
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# 系統相關
+.DS_Store
+Thumbs.db
+
+# pytest
+.pytest_cache/
+.tox/
+.coverage
+.cache/
+
+# Jupyter Notebook Checkpoints
+.ipynb_checkpoints/
+
+# mypy
+.mypy_cache/
+
+# Pipenv
+Pipfile.lock
+
+# 本地配置文件
+local_settings.py
