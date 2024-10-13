@@ -13,7 +13,10 @@ def join_room(request, room_name):
         uuid = get_random_string(32)  # 生成唯一的 UUID
         UserSession.objects.create(uuid=uuid, name=name)
 
-        return redirect('chatroom', room_name=room_name, uuid=uuid)
+        return redirect('chatroom', room_name=room_name)
+    
+    # 如果是 GET 請求，渲染一個輸入用戶名的頁面
+    return render(request, 'chatroom/join_room.html', {'room_name': room_name})
 
 # 發送訊息
 def send_message(request, room_name):
@@ -27,3 +30,7 @@ def send_message(request, room_name):
             Message.objects.create(chatroom=chatroom, sender_name=user.name, content=content)
             return JsonResponse({"status": "Message sent"})
         return JsonResponse({"error": "Invalid session or room"}, status=400)
+
+# 顯示聊天室頁面
+def chatroom_view(request, room_name):
+    return render(request, 'chatroom/chatroom.html', {'room_name': room_name})

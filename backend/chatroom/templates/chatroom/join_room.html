@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Join Room</title>
+</head>
+<body>
+    <h2>Join {{ room_name }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="name">Enter your name:</label>
+        <input type="text" id="name" name="name">
+        <button type="submit">Join</button>
+    </form>
+</body>
+</html>
