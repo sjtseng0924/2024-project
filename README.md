@@ -14,5 +14,23 @@ pip install -r requirements.txt
 ### Run mongo container
 
 ```bash
-docker run -p 27017:27017 -d mongo:8.0.1
+docker run -p 27017:27017 --name devproject_db -d mongo:8.0.1
+```
+
+### Start existing container
+
+```bash
+docker start devproject_db
+```
+
+### Migrate
+
+```bash
+python manage.py migrate
+```
+
+### Run server
+
+```bash
+python manage.py runserver
 ```
