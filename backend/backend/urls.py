@@ -18,6 +18,6 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('chatroom/', include('chatroom.urls')),
+    path('api/chatroom/', include('chatroom.urls')),
     path('admin/', admin.site.urls),
 ]
