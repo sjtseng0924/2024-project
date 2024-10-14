@@ -1,0 +1,37 @@
+@host = http://localhost:8000
+@room_name = test_room
+@user_name = chueat
+@message = Hello!
+
+GET {{host}}/api/chatroom/join/{{room_name}}/
+
+### Create room
+POST {{host}}/api/chatroom/create/{{room_name}}/
+Content-Type: application/json
+
+### New user
+POST {{host}}/api/chatroom/newuser/{{user_name}}/
+Content-Type: application/json
+
+### Join room
+POST {{host}}/api/chatroom/join/{{room_name}}/
+Content-Type: application/json
+
+{
+    "name": "{{user_name}}"
+}
+
+### Send message
+POST {{host}}/api/chatroom/send/{{room_name}}/
+Content-Type: application/json
+
+{
+    "message": "{{message}}",
+    "name": "{{user_name}}"
+}
+
+### Get all messages
+GET {{host}}/api/chatroom/messages/{{room_name}}/
+
+### Get specific user's messages
+GET {{host}}/api/chatroom/messages/{{room_name}}/{{user_name}}/
