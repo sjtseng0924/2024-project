@@ -1,36 +1,74 @@
+import json
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from .models import ChatRoom, Message, UserSession
 from django.utils.crypto import get_random_string
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 
-# 加入聊天室
-def join_room(request, room_name):
+# Create room
+@csrf_exempt
+def create_room(request, room_name):
     if request.method == 'POST':
-        name = request.POST.get('name')
-        if not name:
-            return JsonResponse({"error": "Name is required"}, status=400)
-
-        uuid = get_random_string(32)  # 生成唯一的 UUID
-        UserSession.objects.create(uuid=uuid, name=name)
-
-        return redirect('chatroom', room_name=room_name)
+        try:
+            if room_name:
+                ChatRoom.objects.create(name=room_name, created_at=timezone.now())
+                return JsonResponse({"status": "Room created"})
+            else:
+                return JsonResponse({"status": "Room name is required"}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({"status": "Invalid JSON"}, status=400)
     
-    # 如果是 GET 請求，渲染一個輸入用戶名的頁面
-    return render(request, 'chatroom/join_room.html', {'room_name': room_name})
 
-# 發送訊息
+# New user
+@csrf_exempt
+def new_user(request, user_name):
+    if request.method == 'POST':
+        try:
+            exist_users = UserSession.objects.all()
+            if any(user.name == user_name for user in exist_users):
+                return JsonResponse({"status": "User already exists"}, status=400)
+            
+            uuid = get_random_string(32)
+            UserSession.objects.create(uuid=uuid, name=user_name)
+            return JsonResponse({"status": "User created", "uuid": uuid})
+
+        except json.JSONDecodeError:
+            return JsonResponse({"status": "Invalid JSON"}, status=400)
+
+# Send messages
+@csrf_exempt
 def send_message(request, room_name):
     if request.method == 'POST':
-        content = request.POST.get('message')
-        uuid = request.POST.get('uuid')
-        user = UserSession.objects.filter(uuid=uuid).first()
+        try:
+            data = json.loads(request.body)
+
+            content = data.get('message')
+            user_name = data.get('name')
+            chatroom = ChatRoom.objects.filter(name=room_name).first()
+
+            if user_name and chatroom:
+                Message.objects.create(chatroom=chatroom, sender_name=user_name, content=content)
+                return JsonResponse({"status": "Message sent"})
+            return JsonResponse({"error": "Invalid user or room"}, status=400)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"status": "Invalid JSON"}, status=400)
+
+# Get all messages
+def get_allmessage(request, room_name):
+    if request.method == 'GET':
         chatroom = ChatRoom.objects.filter(name=room_name).first()
+        if chatroom:
+            messages = Message.objects.filter(chatroom=chatroom)
+            return JsonResponse({"messages": [{"sender_name": message.sender_name, "content": message.content, "time": message.timestamp} for message in messages]})
+        return JsonResponse({"error": "Room not found"}, status=404)
 
-        if user and chatroom:
-            Message.objects.create(chatroom=chatroom, sender_name=user.name, content=content)
-            return JsonResponse({"status": "Message sent"})
-        return JsonResponse({"error": "Invalid session or room"}, status=400)
+def get_messages(request, room_name, user_name):
+    if request.method == 'GET':
+        chatroom = ChatRoom.objects.filter(name=room_name).first()
+        if chatroom:
+            messages = Message.objects.filter(chatroom=chatroom, sender_name=user_name)
+            return JsonResponse({"messages": [{"content": message.content, "time": message.timestamp} for message in messages]})
+        return JsonResponse({"error": "Room not found"}, status=404)
 
-# 顯示聊天室頁面
-def chatroom_view(request, room_name):
-    return render(request, 'chatroom/chatroom.html', {'room_name': room_name})
