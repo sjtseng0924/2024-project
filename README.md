@@ -23,9 +23,10 @@ docker run -p 27017:27017 --name devproject_db -d mongo:8.0.1
 docker start devproject_db
 ```
 
-### Migrate
+### Migrate Models to MongoDB
 
 ```bash
+python manage.py makemigrations
 python manage.py migrate
 ```
 
@@ -34,3 +35,6 @@ python manage.py migrate
 ```bash
 python manage.py runserver
 ```
+
+### Admin
+http://127.0.0.1:8000/admin/
