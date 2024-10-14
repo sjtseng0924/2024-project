@@ -57,10 +57,8 @@
     }
     ```
 
-### Get All Messages
+### `GET /api/chatroom/messages/<str:room_name>/`
 
-- **URL**: `/api/chatroom/messages/<str:room_name>/`
-- **Method**: GET
 - **Description**: Retrieves all messages from the specified chat room.
 - **Request Body**:
   - None
