@@ -2,6 +2,8 @@
 @room_name = test_room
 @user_name = chueat
 @message = Hello!
+@note_content = Test Content
+@note_id = 1
 
 GET {{host}}/api/chatroom/join/{{room_name}}/
 
@@ -35,3 +37,17 @@ GET {{host}}/api/chatroom/messages/{{room_name}}/
 
 ### Get specific user's messages
 GET {{host}}/api/chatroom/messages/{{room_name}}/{{user_name}}/
+
+### Add note
+POST {{host}}/api/stickynotes/add/
+Content-Type: application/json
+
+{
+    "note_content": "{{note_content}}"
+}
+
+### Get one note
+GET {{host}}/api/stickynotes/get/{{note_id}}/
+
+### Get all notes
+GET {{host}}/api/stickynotes/get/
