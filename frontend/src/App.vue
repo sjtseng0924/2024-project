@@ -27,7 +27,15 @@ export default {
       this.userName = "";
       this.isRegistered = false; // 更新为未登录
     }
-  }
+  },
+  mounted() {
+    const savedUserName = localStorage.getItem("userName");
+    if (savedUserName) {
+      this.userName  = savedUserName;
+      this.isRegistered = true;
+    }
+    
+  },
 };
 </script>
 

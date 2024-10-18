@@ -5,7 +5,7 @@
       <h1 v-else>Chat Application</h1>
       <div v-if="isRegistered" class="navbar-right">
         <p>Logged in as: <strong>{{ localUserName }}</strong></p>
-        <button @click="logout">Logout</button>
+        <!-- <button @click="logout">Logout</button> -->
       </div>
     </nav>
 
@@ -75,7 +75,7 @@ export default {
           alert("User created successfully!");
         }
         this.$emit('login', this.localUserName);
-        localStorage.setItem("UserName", this.localUserName);
+        
         
       } catch (error) {
         alert(error.message || "Login failed.");
@@ -109,16 +109,12 @@ export default {
     },
   },
   mounted() {
-    const savedUserName = localStorage.getItem("userName");
     const savedRoomName = localStorage.getItem("roomName");
-    if (savedUserName) {
-      this.localUserName  = savedUserName;
-      this.isRegistered = true;
-    }
     if (savedRoomName) {
       this.roomName = savedRoomName;
       this.inRoom = true;
     }
+    
   },
 };
 </script>

@@ -39,10 +39,12 @@
 
 <script>
 export default {
-  props: ['isLoggedIn', 'username'],
+  props: ['isLoggedIn', 'userName'],
   data() {
     return {
       currentPage: 'LoginComponent',
+      // localUserName: this.userName, // Create a local variable for username
+      // isRegistered: this.isLoggedIn,
     };
   },
   methods: {
@@ -61,13 +63,15 @@ export default {
       // 當未登入時自動跳轉到 /chatapp 頁面
       if (!newVal) {
         this.$router.push('/chatapp');
+
       }
     },
+    
   },
   mounted() {
-    // if (!this.isLoggedIn) {
-    //   this.$router.push('/chatapp'); // 頁面載入時檢查登入狀態
-    // }
+    if (!this.username) {
+      this.$router.push('/chatapp'); // 頁面載入時檢查登入狀態
+    }
   },
   components: {
   },

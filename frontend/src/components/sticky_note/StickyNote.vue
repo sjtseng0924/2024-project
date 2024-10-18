@@ -29,6 +29,7 @@
 import { createNote, getAllNotes } from "@/services/noteboard/noteboardService";
 
 export default {
+  props: ['isLoggedIn', 'userName'],
   data() {
     return {
       notes: [
@@ -98,6 +99,11 @@ export default {
   },
   mounted() {
     this.fetchNotes();
+    if (!this.userName) {
+      this.$router.push('/chatapp').then(() => {
+        window.location.reload(); // 重定向後重新整理頁面
+      });
+    }
   },
 };
 </script>
