@@ -29,7 +29,7 @@
             <router-link class="nav-link" to="/sticky_note">留言板</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/map">地圖與時程</router-link>
+            <router-link class="nav-link" to="/map">活動與地圖</router-link>
           </li>
         </ul>
 
