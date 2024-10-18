@@ -18,8 +18,8 @@
     <div v-if="showModal" class="modal-overlay">
       <div class="modal">
         <textarea v-model="newNoteContent" placeholder="輸入留言內容"></textarea>
-        <button @click="submitNote">新增</button>
-        <button @click="showModal = false">取消</button>
+        <button class="btn-submit" @click="submitNote">新增</button>
+        <button class="btn-cancel" @click="showModal = false">取消</button>
       </div>
     </div>
   </div>
@@ -33,19 +33,17 @@ export default {
   data() {
     return {
       notes: [
-      ],              // 從後端獲取的留言
-      showModal: false,        // 控制模態視窗顯示與否
-      newNoteContent: '',      // 新留言的內容
+      ],              
+      showModal: false,        
+      newNoteContent: '',     
     };
   },
   computed: {
     sortedNotes() {
       return [...this.notes].sort((a, b) => {
         if (b.likes === a.likes) {
-          // 如果按讚數一樣，按照時間排序，新的在上
           return new Date(b.time).getTime() - new Date(a.time).getTime();
         }
-        // 按讚數由高到低排序
         return b.likes - a.likes;
       });
     },
@@ -54,7 +52,7 @@ export default {
     async fetchNotes() {
       try {
         const response = await getAllNotes();
-        this.notes = response.notes;  // 從後端取得所有便條
+        this.notes = response.notes;  
       } catch (error) {
         console.error(error);
       }
@@ -129,6 +127,9 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   word-wrap: break-word;  /* 讓內容自動換行 */
+}
+.message-card:hover{
+  background-color: #d1d1d1;
 }
 
 /* 留言內容 */
@@ -209,9 +210,34 @@ export default {
 textarea {
   width: 100%;
   height: 100px;
-  margin-bottom: 10px;
   padding: 10px;
   border-radius: 5px;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+.btn-submit {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #e0e0e0; 
+  color: #333;
+  font-size: 16px;
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+.btn-cancel {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color:#e0e0e0; 
+  color: #333;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.btn-submit:hover, .btn-cancel:hover {
+  background-color:#d1d1d1;
 }
 </style>
