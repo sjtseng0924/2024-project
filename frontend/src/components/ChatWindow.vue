@@ -23,7 +23,7 @@
   </template>
   
   <script>
-  import { getAllMessages, sendMessage } from '@/services/chatroomService';
+  import { getAllMessages, sendMessage } from '@/services/chatroom/chatroomService';
   import Message from './ChatMessage.vue';
   
   export default {

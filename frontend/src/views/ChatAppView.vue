@@ -1,5 +1,8 @@
 <template>
-    <ChatApp/>
+    <div class="pt-[75px]">
+        <ChatApp/>
+    </div>
+    
 </template>
 
 <script setup>
