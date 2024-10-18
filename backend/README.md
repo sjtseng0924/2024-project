@@ -116,3 +116,79 @@
         ]
     }
     ```
+
+## Sticky Note Endpoints
+
+### `POST /api/stickynotes/add/`
+
+- **Description**: Add a sticky note.
+- **Request Body**:
+  - **note_content**: The content of the sticky note.
+  - **Example**
+    ```json
+    {
+        "note_content": "Hello, world!"
+    }
+    ```
+- **Response**:
+  - **200 OK**: Sticky note added successfully.
+  - **400 Bad Request**: Failed created
+  - **Example**
+    ```json
+    {
+        "status": "Message sent"
+    }
+    ```
+
+### `GET /api/stickynotes/get/<int:note_id>/`
+
+- **Description**: Retrieves sticky note by a specific note ID
+- **Request Body**:
+  - None
+- **Response**
+  - **200 OK**: Returns a sticky note.
+  - **400 Bad Request**: Invalid JSON.
+  - **404 Not Found**: Note not found.
+  - **Example**
+    ```json
+    {
+        "notes": [
+            {
+                "content": "Test Content",
+                "time": "2024-10-18T07:46:27.960Z",
+                "note_id": 1
+            }
+        ]
+    }
+    ```
+
+### `GET /api/stickynotes/get/`
+
+- **Description**: Retrieves all sticky notes.
+- **Request Body**:
+  - None
+- **Response**
+  - **200 OK**: Returns all sticky notes.
+  - **400 Bad Request**: Invalid JSON.
+  - **Example**
+    ```json
+    {
+    "notes": [
+        {
+            "content": "Test Content",
+            "time": "2024-10-18T07:46:27.960Z",
+            "note_id": 1
+        },
+        {
+            "content": "Test Content",
+            "time": "2024-10-18T07:47:59.846Z",
+            "note_id": 2
+        },
+        {
+            "content": "Test Content",
+            "time": "2024-10-18T07:48:00.198Z",
+            "note_id": 3
+        }
+    ]
+    }
+    ```
