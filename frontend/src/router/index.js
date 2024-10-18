@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import ChatApp from "@/components/ChatApp.vue";
 import StickyNote from "@/components/sticky_note/StickyNote.vue";
 import LoginWindow from "@/components/LoginWindow.vue";
+import Map from "@/components/map/Map.vue";
 
 const routes = [
   {
@@ -21,6 +22,11 @@ const routes = [
     name: 'stickynote',
     component: StickyNote,
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/map',
+    name: 'map',
+    component: Map
   },
   {
     path: '/login',
