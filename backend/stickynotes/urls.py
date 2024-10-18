@@ -8,4 +8,5 @@ urlpatterns = [
     path('get', views.get_all_note, name='get_all_note'),
     path('get/<int:note_id>/', views.get_one_note, name='get_one_note'),
     path('get/<int:note_id>', views.get_one_note, name='get_one_note'),
+    path('update_likes/<int:note_id>/', views.update_likes, name='update_likes'),
 ]

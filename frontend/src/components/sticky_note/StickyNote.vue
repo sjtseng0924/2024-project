@@ -2,13 +2,13 @@
 <template>
   <div class="message-board">
     <!-- Display All Notes -->
-    <div v-for="note in sortedNotes" :key="note.id" class="message-card">
+    <div v-for="note in sortedNotes" :key="note.note_id" class="message-card">
       <p class="message-content">{{ note.content }}</p>
       <p class="message-time">{{ formatTime(note.time) }}</p>
       
       <!-- Like Feature -->
       <div class="like-section">
-        <button @click="likeNote(note.id)" class="btn btn-light">
+        <button @click="likeNote(note.note_id)" class="btn btn-light">
           👍 {{ note.likes }} 個讚
         </button>
       </div>
@@ -81,7 +81,7 @@
 <script>
 // Import Bootstrap's Modal JS
 import { Modal } from 'bootstrap';
-import { createNote, getAllNotes } from "@/services/noteboard/noteboardService";
+import { createNote, getAllNotes, updateLikes } from "@/services/noteboard/noteboardService";
 
 export default {
   name: 'StickyNote',
@@ -95,12 +95,10 @@ export default {
   },
   computed: {
     sortedNotes() {
-      return [...(this.notes || [])].sort((a, b) => {
+      return [...this.notes].sort((a, b) => {
         if (b.likes === a.likes) {
-          // If likes are equal, sort by time (newer first)
-          return b.time - a.time;
+          return new Date(b.time).getTime() - new Date(a.time).getTime();
         }
-        // Sort by likes descending
         return b.likes - a.likes;
       });
     },
@@ -108,26 +106,10 @@ export default {
   methods: {
     async fetchNotes() {
       try {
-        const fetchedData = await getAllNotes();
-        console.log("Fetched Data:", fetchedData); // Debugging line
-
-        if (fetchedData && Array.isArray(fetchedData.notes)) {
-          // Map the fetched notes to match the component's expected structure
-          this.notes = fetchedData.notes.map(note => ({
-            id: Date.now() + Math.random(), // Generate a unique ID
-            content: note.content,
-            time: new Date(note.time).getTime(), // Convert ISO string to timestamp
-            likes: 0, // Initialize likes to 0 since backend doesn't provide it
-          }));
-        } else {
-          console.error("Fetched data is not an array:", fetchedData);
-          alert("獲取留言時發生錯誤。");
-          this.notes = []; // Fallback to an empty array
-        }
+        const response = await getAllNotes();
+        this.notes = response.notes;  
       } catch (error) {
-        console.error("Failed to fetch notes:", error);
-        alert("無法獲取留言。");
-        this.notes = []; // Fallback to an empty array
+        console.error(error);
       }
     },
     async submitNote() {
@@ -135,50 +117,30 @@ export default {
         alert("請輸入留言內容");
         return;
       }
-      
-      // Create a new note object
       const newNote = {
-        id: Date.now() + Math.random(), // Generate a more unique ID
         content: this.newNoteContent,
-        time: Date.now(),               // Record current time as timestamp
-        likes: 0,                       // Initial likes
       };
-      
       try {
-        // Persist the note to the backend
-        const response = await createNote(newNote.content);
-        
-        console.log("Create Note Response:", response); // Debugging line
-        
-        // Adjust the condition based on the actual response structure
-        // Assuming response.status is case-insensitive "success"
-        if (response.status && response.status.toLowerCase() === "note added successfully") {
-          // Optionally, you can fetch the newly created note's ID from response.uuid
-          newNote.id = response.uuid || newNote.id; // Update ID if backend provides one
-          
-          // Update the local notes array for immediate feedback
-          this.notes.unshift(newNote);
-          
-          // Clear the textarea
-          this.newNoteContent = '';
-          
-          // Close the Bootstrap modal
-          this.closeModal();
-        } else {
-          throw new Error("Backend responded with an error.");
-        }
-        
+        // 發送到後端新增留言
+        await createNote(newNote.content);
+        this.newNoteContent = ''; 
+        this.showModal = false;   
+        this.fetchNotes();      
       } catch (error) {
-        console.error("Failed to add note:", error);
         alert(error.message || "新增留言失敗");
       }
     },
-    likeNote(noteId) {
-      // Find the corresponding note and increment likes
-      const note = this.notes.find((n) => n.id === noteId);
+    async likeNote(noteId) {
+      // 找到對應的留言並增加讚數
+      const note = this.notes.find((n) => n.note_id === noteId);
       if (note) {
         note.likes += 1;
-        // Optionally, persist the like to the backend here
+        try {
+          // 發送請求到後端更新按讚數
+          await updateLikes(noteId, note.likes);
+        } catch (error) {
+          console.error("更新按讚數失敗", error);
+        }
       }
     },
     formatTime(timestamp) {

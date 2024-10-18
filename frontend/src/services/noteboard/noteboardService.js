@@ -16,3 +16,10 @@ export const findNote = async (NoteID) => {
   const response = await api.get(`/get/${NoteID}/`);
   return response.data;
 };
+
+export const updateLikes = async (NoteID, likes) => {
+  const response = await api.post(`/update_likes/${NoteID}/`, {
+    likes: likes 
+  });
+  return response.data; 
+};

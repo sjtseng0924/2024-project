@@ -1,7 +1,6 @@
 <template>
     <div
       class="note"
-      :style="noteStyle" 
     >
       <p>{{ content }}</p>
       <button class="like-button" @click="likeNote" >:thumbsup: {{ likes }}</button>
