@@ -245,4 +245,39 @@ export default {
   align-items: center;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
+
+@media (max-width: 768px) {
+  /* Centering the input box and button in the modal */
+  .modal-dialog {
+    max-width: 90%;
+    margin: auto;
+  }
+
+  .modal-body textarea {
+    width: 100%;
+    resize: vertical;
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  /* Adjust message-card width */
+  .message-card {
+    width: 95vw;
+    padding: 5vw;
+  }
+
+  /* Adjust add-note-button size and position for smaller screens */
+  .add-note-button {
+    bottom: 4vw;
+    right: 50%;
+    transform: translateX(50%);
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+  }
+}
 </style>

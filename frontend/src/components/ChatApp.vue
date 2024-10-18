@@ -7,12 +7,17 @@
         <!-- Main Chatroom and Dropdown Section -->
         <div class="row justify-content-center mb-4">
           <div class="col-12 col-md-6 mb-3">
-            <button class="btn btn-dark w-75" @click="roomName = '歡樂聊天室'; joinRoom()">歡樂聊天室</button>
+            <button
+              class="btn btn-dark btn-sm w-100"
+              @click="roomName = '歡樂聊天室'; joinRoom()"
+            >
+              歡樂聊天室
+            </button>
           </div>
 
           <div class="col-12 col-md-6 mb-3">
-            <div class="input-group">
-              <select v-model="selectedRoom" class="form-select">
+            <div class="input-group input-group-sm justify-content-center">
+              <select v-model="selectedRoom" class="form-select form-select-sm">
                 <option disabled value="">選擇企業聊天室</option>
                 <option value="恩智浦半導體">恩智浦半導體</option>
                 <option value="LINE台灣">LINE台灣</option>
@@ -22,18 +27,28 @@
                 <option value="中華電信">中華電信</option>
                 <option value="創客交流組">創客交流組</option>
               </select>
-              <button class="btn btn-secondary" @click="confirmRoomSelection">確認</button>
+              <button
+                class="btn btn-secondary btn-sm"
+                @click="confirmRoomSelection"
+              >
+                確認
+              </button>
             </div>
           </div>
         </div>
 
         <!-- Custom Room Creation Section -->
         <div class="custom-room mt-4">
-          <h4>私人聊天室</h4>
-          <div class="d-flex justify-content-center mt-3">
-            <div class="input-group custom-input-group">
-              <input v-model="roomName" type="text" class="form-control" placeholder="聊天室名稱" />
-              <button class="btn btn-secondary" @click="joinRoom">加入</button>
+          <h4 class="mb-3">私人聊天室</h4>
+          <div class="d-flex justify-content-center">
+            <div class="input-group input-group-sm custom-input-group">
+              <input
+                v-model="roomName"
+                type="text"
+                class="form-control form-control-sm"
+                placeholder="聊天室名稱"
+              />
+              <button class="btn btn-secondary btn-sm" @click="joinRoom">加入</button>
             </div>
           </div>
         </div>
@@ -43,10 +58,10 @@
     <div v-else>
       <div class="card">
         <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-          <h5>{{ roomName }}</h5>
-          <button class="btn btn-outline-light" @click="handleRoomExit">離開</button>
+          <h5 class="mb-0">{{ roomName }}</h5>
+          <button class="btn btn-outline-light btn-sm" @click="handleRoomExit">離開</button>
         </div>
-        <div class="card-body">
+        <div class="card-body p-0">
           <ChatWindow
             :userName="userName"
             :roomName="roomName"
@@ -120,8 +135,9 @@ export default {
 
 <style scoped>
 .chat-app {
-  max-width: 900px; /* 保持最大寬度 */
+  max-width: 900px; /* Maintains maximum width */
   margin: auto;
+  padding: 15px; /* Added padding for better spacing on mobile */
 }
 
 .center-room {
@@ -132,7 +148,7 @@ export default {
 }
 
 .room-container {
-  /* 使用 Flexbox 來置中內容 */
+  /* Flexbox centering */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -140,7 +156,7 @@ export default {
 }
 
 .w-100 {
-  max-width: 600px; /* 限制內容的最大寬度 */
+  max-width: 600px; /* Limits content width */
   margin: auto;
 }
 
@@ -149,46 +165,46 @@ button {
 }
 
 .custom-room h4 {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
 }
 
 .card-header h5 {
   margin: 0;
 }
 
-/* 確保 input-group 元素保持在同一行 */
+/* Ensure input-group elements stay in the same line */
 .input-group {
   display: flex;
   flex-wrap: nowrap;
 }
 
-/* 調整主聊天室下拉選單和按鈕 */
+/* Adjust main chatroom dropdown and button */
 .input-group .form-select {
   flex: 2 1 auto;
-  min-width: 200px; /* 設置最小寬度以防止過窄 */
+  min-width: 150px; /* Prevents from being too narrow */
 }
 
 .input-group .btn {
   flex: 0 0 auto;
-  width: 100px; /* 設置固定寬度 */
+  width: 80px; /* Reduced width for buttons */
 }
 
-/* 調整自定義房間創建部分的輸入框和按鈕 */
+/* Adjust custom room creation input and button */
 .custom-input-group {
-  max-width: 350px; /* 控制整個 input-group 的最大寬度 */
+  max-width: 300px; /* Controls the max width of input-group */
 }
 
 .custom-input-group .form-control {
   flex: 1 1 auto;
-  max-width: 250px; /* 設置輸入框的最大寬度 */
+  max-width: 200px; /* Sets max width for input */
 }
 
 .custom-input-group .btn {
   flex: 0 0 auto;
-  width: 100px; /* 設置固定寬度 */
+  width: 80px; /* Reduced width for button */
 }
 
-/* 調整按鈕大小和間距以保持一致 */
+/* Consistent button styling */
 .btn-secondary {
   background-color: #6c757d;
   border-color: #6c757d;
@@ -199,39 +215,47 @@ button {
   border-color: #545b62;
 }
 
-/* 響應式調整 */
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .input-group {
-    flex-direction: column;
-  }
-
-  .input-group .form-select,
-  .input-group .form-control {
-    width: 100%;
-    flex: none;
-  }
-
-  .input-group .btn,
-  .custom-room .btn {
-    margin-top: 10px;
-    width: 100%;
-  }
-
-  .custom-room .btn {
-    width: 100%;
-    margin-top: 10px;
+    flex-wrap: nowrap; /* Prevent wrapping */
+    justify-content: center; /* Center the input-group */
   }
 
   .custom-input-group {
-    flex-direction: column;
-    align-items: center;
-    max-width: 100%; /* 允許在小屏幕上擴展 */
+    flex-wrap: nowrap;
+    max-width: 100%;
+    justify-content: center; /* Center the custom-input-group */
   }
 
-  .custom-input-group .form-control,
-  .custom-input-group .btn {
-    width: 100%;
-    margin-top: 10px;
+  /* Adjust heading sizes for better readability */
+  h2 {
+    font-size: 1.3rem;
+  }
+
+  h4 {
+    font-size: 1rem;
+  }
+
+  /* Adjust button sizes */
+  .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  /* Adjust card header for better spacing */
+  .card-header {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .card-body {
+    padding: 0.5rem;
+  }
+
+  /* Center input-group and custom-input-group */
+  .input-group,
+  .custom-input-group {
+    margin: 0 auto; /* Center horizontally */
   }
 }
 </style>
