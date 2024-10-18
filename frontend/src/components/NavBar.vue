@@ -7,21 +7,26 @@
         WebSiteName
       </div>
 
-      <!-- Center links -->
-      <div class="flex space-x-6">
-        <router-link to="/chatapp" class="hover:text-white" v-if="isLoggedIn">Chat App</router-link>
-        <router-link to="/sticky_note" class="hover:text-white" v-if="isLoggedIn">Note Board</router-link>
-        <router-link to="/map" class="hover:text-white" v-if="isLoggedIn">Map</router-link>
+      <!-- Center links, hide on mobile if not logged in -->
+      <div class="hidden md:flex space-x-6" v-if="isLoggedIn">
+        <router-link to="/chatapp" class="hover:text-white">Chat App</router-link>
+        <router-link to="/sticky_note" class="hover:text-white">Note Board</router-link>
+        <router-link to="/map" class="hover:text-white">Map</router-link>
       </div>
 
-      <!-- Login or Username on the right -->
+      <!-- Login/Username/Logout on the right -->
       <div class="flex items-center space-x-4">
         <button v-if="!isLoggedIn" @click="login" class="flex items-center space-x-1 hover:text-white">
-          <span>&#128274;</span> <span>Login</span>
+          <!-- <span>&#128274;</span> <span>Login</span> -->
         </button>
-        <span v-else class="flex items-center space-x-1 text-white">
-          <span>{{ username }}</span>
-        </span>
+        <div v-else class="flex items-center space-x-4">
+          <span class="flex items-center space-x-1 text-white">
+            <span>{{ username }}</span>
+          </span>
+          <button @click="logout" class="hover:text-white">
+            Logout
+          </button>
+        </div>
       </div>
     </nav>
 
@@ -34,40 +39,43 @@
 
 <script>
 export default {
+  props: ['isLoggedIn', 'username'],
   data() {
     return {
-      isLoggedIn: false,
-      username: '',
       currentPage: 'LoginComponent',
     };
   },
   methods: {
-    login() {
-      // Simulate login process
-      this.isLoggedIn = true;
-      this.username = 'JohnDoe'; // Replace with actual username logic
-      this.currentPage = 'HomeComponent'; // Switch to home page after login
+    // login() {
+    //   // 模擬登入過程
+    //   this.isLoggedIn = true;
+    //   this.username = 'JohnDoe'; // 替換為真實的登入邏輯
+    //   this.currentPage = 'HomeComponent'; // 登入後顯示首頁
+    // },
+    logout() {
+      this.$emit('logout'); // 触发登出事件
     },
   },
+  watch: {
+    isLoggedIn(newVal) {
+      // 當未登入時自動跳轉到 /chatapp 頁面
+      if (!newVal) {
+        this.$router.push('/chatapp');
+      }
+    },
+  },
+  mounted() {
+    // if (!this.isLoggedIn) {
+    //   this.$router.push('/chatapp'); // 頁面載入時檢查登入狀態
+    // }
+  },
   components: {
-    LoginComponent: {
-      template: `<div>Please login to access the website.</div>`,
-    },
-    HomeComponent: {
-      template: `<div>Welcome to the Home Page!</div>`,
-    },
-    Page1Component: {
-      template: `<div>Page 1 Content</div>`,
-    },
-    Page2Component: {
-      template: `<div>Page 2 Content</div>`,
-    },
   },
 };
 </script>
 
 <style scoped>
-/* Navbar Styles to match your image */
+/* Navbar Styles */
 nav {
   display: flex;
   align-items: center;
@@ -112,5 +120,23 @@ nav .space-x-6 > * + * {
 
 nav .space-x-4 > * + * {
   margin-left: 1rem; /* Adds space between login buttons */
+}
+
+/* Mobile styles: Stack items vertically and hide center links */
+@media (max-width: 768px) {
+  nav {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .space-x-6 {
+    flex-direction: column;
+    margin-top: 1rem;
+  }
+
+  .space-x-6 > * + * {
+    margin-left: 0; /* Remove horizontal spacing */
+    margin-top: 1rem; /* Add vertical spacing */
+  }
 }
 </style>
