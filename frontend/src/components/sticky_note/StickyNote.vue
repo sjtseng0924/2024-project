@@ -2,12 +2,12 @@
   <div class="message-board">
     <!-- 顯示所有留言 -->
     <div v-for="(note, index) in sortedNotes" :key="index" class="message-card">
-      <p class="message-content">{{ note.content }}</p>
+      <p class="message-content">{{ note.content }} </p>
       <p class="message-time">{{ formatTime(note.time) }}</p>
       
       <!-- 按讚功能 -->
       <div class="like-section">
-        <button @click="likeNote(note.id)">👍 {{ note.likes }} Likes</button>
+        <button @click="likeNote(note.note_id)">👍 {{ note.likes }} Likes</button>
       </div>
     </div>
     
@@ -26,18 +26,13 @@
 </template>
 
 <script>
-import { createNote, getAllNotes } from "@/services/noteboard/noteboardService";
+import { createNote, getAllNotes, updateLikes } from "@/services/noteboard/noteboardService";
 
 export default {
   data() {
     return {
       notes: [
-        { id: 1, content: '便條 1', time: 0, likes: 0 },
-        { id: 2, content: '便條 2', time: 0, likes: 0 },
-        { id: 3, content: '便條 3', time: 0, likes: 5 },
-        { id: 4, content: '便條 4', time: 0, likes: 2 },
-        // ... 其他便條
-      ],
+      ],              // 從後端獲取的留言
       showModal: false,        // 控制模態視窗顯示與否
       newNoteContent: '',      // 新留言的內容
     };
@@ -47,7 +42,7 @@ export default {
       return [...this.notes].sort((a, b) => {
         if (b.likes === a.likes) {
           // 如果按讚數一樣，按照時間排序，新的在上
-          return b.time - a.time;
+          return new Date(b.time).getTime() - new Date(a.time).getTime();
         }
         // 按讚數由高到低排序
         return b.likes - a.likes;
@@ -57,7 +52,8 @@ export default {
   methods: {
     async fetchNotes() {
       try {
-        this.notes = await getAllNotes();
+        const response = await getAllNotes();
+        this.notes = response.notes;  // 從後端取得所有便條
       } catch (error) {
         console.error(error);
       }
@@ -67,28 +63,30 @@ export default {
         alert("請輸入留言內容");
         return;
       }
-      // 發送到後端的邏輯
       const newNote = {
-        id: this.notes.length + 1,
         content: this.newNoteContent,
-        time: Date.now(),  // 記錄當前時間
-        likes: 0,          // 初始按讚數為 0
       };
       try {
-        this.notes.push(newNote);
-        this.newNoteContent = ''; // 清空輸入框
-        this.showModal = false;   // 關閉模態視窗
-        this.fetchNotes();        // 更新留言板
+        // 發送到後端新增留言
         await createNote(newNote.content);
+        this.newNoteContent = ''; 
+        this.showModal = false;   
+        this.fetchNotes();      
       } catch (error) {
         alert(error.message || "新增留言失敗");
       }
     },
-    likeNote(noteId) {
+    async likeNote(noteId) {
       // 找到對應的留言並增加讚數
-      const note = this.notes.find((n) => n.id === noteId);
+      const note = this.notes.find((n) => n.note_id === noteId);
       if (note) {
         note.likes += 1;
+        try {
+          // 發送請求到後端更新按讚數
+          await updateLikes(noteId, note.likes);
+        } catch (error) {
+          console.error("更新按讚數失敗", error);
+        }
       }
     },
     formatTime(timestamp) {

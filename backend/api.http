@@ -4,6 +4,7 @@
 @message = Hello!
 @note_content = Test Content
 @note_id = 1
+@new_likes = 1
 
 GET {{host}}/api/chatroom/join/{{room_name}}/
 
@@ -51,3 +52,11 @@ GET {{host}}/api/stickynotes/get/{{note_id}}/
 
 ### Get all notes
 GET {{host}}/api/stickynotes/get/
+
+###
+POST {{host}}/api/stickynotes/update_likes/{{note_id}}/
+Content-Type: application/json
+
+{
+    "likes": "{{new_likes}}"
+}

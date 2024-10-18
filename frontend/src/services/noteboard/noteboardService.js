@@ -8,11 +8,18 @@ export const createNote = async (noteContent) => {
 };
 
 export const getAllNotes = async () => {
-  const response = await api.post(`/get/`);
+  const response = await api.get(`/get/`);
   return response.data;
 };
 
 export const findNote = async (NoteID) => {
   const response = await api.post(`/get/${NoteID}/`);
   return response.data;
+};
+
+export const updateLikes = async (NoteID, likes) => {
+  const response = await api.post(`/update_likes/${NoteID}/`, {
+    likes: likes 
+  });
+  return response.data; 
 };
