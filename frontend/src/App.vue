@@ -1,50 +1,55 @@
+<!-- App.vue -->
 <template>
-  <div id="app">
-    <Navbar :isLoggedIn="isRegistered" :username="userName" @logout="handleLogout" />
-    <router-view :isLoggedIn="isRegistered" :userName="userName" @login="handleLogin" class="pb-[75px]"/>
+  <div>
+    <!-- Navbar Component -->
+    <AppNavbar :isLoggedIn="isLoggedIn" :userName="userName" @logout="handleLogout" />
+
+    <!-- Main Content -->
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import Navbar from '@/components/NavBar.vue'
+import AppNavbar from './components/AppNavbar.vue'; // Updated import path and name
+
 export default {
+  name: 'App',
   components: {
-    Navbar,
+    AppNavbar, // Updated component registration
   },
   data() {
     return {
-      userName: "",
-      isRegistered: false,
+      isLoggedIn: !!localStorage.getItem('userName'),
+      userName: localStorage.getItem('userName') || '',
     };
   },
   methods: {
-    handleLogin(username) {
-      this.userName = username;
-      this.isRegistered = true; // 更新为已登录
-      localStorage.setItem("userName", this.userName);
-    },
     handleLogout() {
-      this.userName = "";
-      this.isRegistered = false; // 更新为未登录
-    }
+      localStorage.removeItem('userName');
+      this.isLoggedIn = false;
+      this.userName = '';
+      this.$router.push('/login');
+    },
+    checkLoginStatus() {
+      this.isLoggedIn = !!localStorage.getItem('userName');
+      this.userName = localStorage.getItem('userName') || '';
+    },
+  },
+  watch: {
+    // Watch for route changes to update login status
+    '$route'() {
+      this.checkLoginStatus();
+    },
   },
   mounted() {
-    const savedUserName = localStorage.getItem("userName");
-    if (savedUserName) {
-      this.userName  = savedUserName;
-      this.isRegistered = true;
-    }
-    
+    // Update state if localStorage changes from other tabs/windows
+    window.addEventListener('storage', () => {
+      this.checkLoginStatus();
+    });
   },
 };
 </script>
 
 <style>
-body {
-  margin: 0;
-  font-family: 'Arial', sans-serif;
-}
-#app {
-  height: 90vh;
-}
+/* Global styles if needed */
 </style>

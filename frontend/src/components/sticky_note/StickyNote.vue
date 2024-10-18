@@ -1,56 +1,106 @@
+<!-- StickyNote.vue -->
 <template>
   <div class="message-board">
-    <!-- 顯示所有留言 -->
-    <div v-for="(note, index) in sortedNotes" :key="index" class="message-card">
+    <!-- Display All Notes -->
+    <div v-for="note in sortedNotes" :key="note.id" class="message-card">
       <p class="message-content">{{ note.content }}</p>
       <p class="message-time">{{ formatTime(note.time) }}</p>
       
-      <!-- 按讚功能 -->
+      <!-- Like Feature -->
       <div class="like-section">
-        <button @click="likeNote(note.id)">👍 {{ note.likes }} Likes</button>
+        <button @click="likeNote(note.id)" class="btn btn-light">
+          👍 {{ note.likes }} 個讚
+        </button>
       </div>
     </div>
     
-    <!-- 右下角圓形加號按鈕 -->
-    <button class="add-note-button" @click="showModal = true">+</button>
+    <!-- Floating Add Note Button -->
+    <button
+      class="add-note-button btn btn-primary rounded-circle"
+      data-bs-toggle="modal"
+      data-bs-target="#addNoteModal"
+    >
+      +
+    </button>
     
-    <!-- 模態視窗 (Modal) -->
-    <div v-if="showModal" class="modal-overlay">
-      <div class="modal">
-        <textarea v-model="newNoteContent" placeholder="輸入留言內容"></textarea>
-        <button @click="submitNote">新增</button>
-        <button @click="showModal = false">取消</button>
+    <!-- Bootstrap Modal for Adding Notes -->
+    <div
+      class="modal fade"
+      id="addNoteModal"
+      tabindex="-1"
+      aria-labelledby="addNoteModalLabel"
+      aria-hidden="true"
+      ref="addNoteModal"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h5 class="modal-title" id="addNoteModalLabel">新增留言</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          
+          <!-- Modal Body -->
+          <div class="modal-body">
+            <textarea
+              v-model="newNoteContent"
+              class="form-control"
+              placeholder="輸入留言內容"
+              rows="4"
+            ></textarea>
+          </div>
+          
+          <!-- Modal Footer -->
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              取消
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              @click="submitNote"
+            >
+              新增
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+// Import Bootstrap's Modal JS
+import { Modal } from 'bootstrap';
 import { createNote, getAllNotes } from "@/services/noteboard/noteboardService";
 
 export default {
-  props: ['isLoggedIn', 'userName'],
+  name: 'StickyNote',
+  // Removed unused props to fix ESLint error
+  // props: ['isLoggedIn', 'userName'],
   data() {
     return {
-      notes: [
-        { id: 1, content: '便條 1', time: 0, likes: 0 },
-        { id: 2, content: '便條 2', time: 0, likes: 0 },
-        { id: 3, content: '便條 3', time: 0, likes: 5 },
-        { id: 4, content: '便條 4', time: 0, likes: 2 },
-        // ... 其他便條
-      ],
-      showModal: false,        // 控制模態視窗顯示與否
-      newNoteContent: '',      // 新留言的內容
+      notes: [], // Initialize as empty array
+      newNoteContent: '', // Content of the new note
     };
   },
   computed: {
     sortedNotes() {
-      return [...this.notes].sort((a, b) => {
+      return [...(this.notes || [])].sort((a, b) => {
         if (b.likes === a.likes) {
-          // 如果按讚數一樣，按照時間排序，新的在上
+          // If likes are equal, sort by time (newer first)
           return b.time - a.time;
         }
-        // 按讚數由高到低排序
+        // Sort by likes descending
         return b.likes - a.likes;
       });
     },
@@ -58,9 +108,26 @@ export default {
   methods: {
     async fetchNotes() {
       try {
-        this.notes = await getAllNotes();
+        const fetchedData = await getAllNotes();
+        console.log("Fetched Data:", fetchedData); // Debugging line
+
+        if (fetchedData && Array.isArray(fetchedData.notes)) {
+          // Map the fetched notes to match the component's expected structure
+          this.notes = fetchedData.notes.map(note => ({
+            id: Date.now() + Math.random(), // Generate a unique ID
+            content: note.content,
+            time: new Date(note.time).getTime(), // Convert ISO string to timestamp
+            likes: 0, // Initialize likes to 0 since backend doesn't provide it
+          }));
+        } else {
+          console.error("Fetched data is not an array:", fetchedData);
+          alert("獲取留言時發生錯誤。");
+          this.notes = []; // Fallback to an empty array
+        }
       } catch (error) {
-        console.error(error);
+        console.error("Failed to fetch notes:", error);
+        alert("無法獲取留言。");
+        this.notes = []; // Fallback to an empty array
       }
     },
     async submitNote() {
@@ -68,48 +135,76 @@ export default {
         alert("請輸入留言內容");
         return;
       }
-      // 發送到後端的邏輯
+      
+      // Create a new note object
       const newNote = {
-        id: this.notes.length + 1,
+        id: Date.now() + Math.random(), // Generate a more unique ID
         content: this.newNoteContent,
-        time: Date.now(),  // 記錄當前時間
-        likes: 0,          // 初始按讚數為 0
+        time: Date.now(),               // Record current time as timestamp
+        likes: 0,                       // Initial likes
       };
+      
       try {
-        this.notes.push(newNote);
-        this.newNoteContent = ''; // 清空輸入框
-        this.showModal = false;   // 關閉模態視窗
-        this.fetchNotes();        // 更新留言板
-        await createNote(newNote.content);
+        // Persist the note to the backend
+        const response = await createNote(newNote.content);
+        
+        console.log("Create Note Response:", response); // Debugging line
+        
+        // Adjust the condition based on the actual response structure
+        // Assuming response.status is case-insensitive "success"
+        if (response.status && response.status.toLowerCase() === "note added successfully") {
+          // Optionally, you can fetch the newly created note's ID from response.uuid
+          newNote.id = response.uuid || newNote.id; // Update ID if backend provides one
+          
+          // Update the local notes array for immediate feedback
+          this.notes.unshift(newNote);
+          
+          // Clear the textarea
+          this.newNoteContent = '';
+          
+          // Close the Bootstrap modal
+          this.closeModal();
+        } else {
+          throw new Error("Backend responded with an error.");
+        }
+        
       } catch (error) {
+        console.error("Failed to add note:", error);
         alert(error.message || "新增留言失敗");
       }
     },
     likeNote(noteId) {
-      // 找到對應的留言並增加讚數
+      // Find the corresponding note and increment likes
       const note = this.notes.find((n) => n.id === noteId);
       if (note) {
         note.likes += 1;
+        // Optionally, persist the like to the backend here
       }
     },
     formatTime(timestamp) {
       const date = new Date(timestamp);
       return date.toLocaleString();
     },
+    closeModal() {
+      // Get the modal element via ref
+      const modalElement = this.$refs.addNoteModal;
+      
+      // Initialize a Bootstrap modal instance
+      const modalInstance = Modal.getInstance(modalElement) || new Modal(modalElement);
+      
+      // Hide the modal
+      modalInstance.hide();
+    },
   },
   mounted() {
+    // Authentication is handled via route guards; no need to check here
     this.fetchNotes();
-    if (!this.userName) {
-      this.$router.push('/chatapp').then(() => {
-        window.location.reload(); // 重定向後重新整理頁面
-      });
-    }
   },
 };
 </script>
 
 <style scoped>
-/* 留言板容器 */
+/* Message Board Container */
 .message-board {
   display: flex;
   flex-direction: column;
@@ -118,61 +213,64 @@ export default {
   gap: 1.5vw;
 }
 
-/* 留言卡片 */
+/* Message Card */
 .message-card {
   background-color: #f9f9f9;
   border: 1px solid #ccc;
-  width: 90vw;   /* 固定寬度 */
+  width: 90vw;   /* Fixed width */
   max-width: 500px;
   padding: 1.5vw;
-  border-radius: 10px; /* 圓角 */
+  border-radius: 10px; /* Rounded corners */
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  word-wrap: break-word;  /* 讓內容自動換行 */
+  word-wrap: break-word;  /* Allow content to wrap */
 }
 
-/* 留言內容 */
+/* Message Content */
 .message-content {
   font-size: 1.1em;
   margin-bottom: 10px;
 }
 
-/* 留言時間 */
+/* Message Time */
 .message-time {
   font-size: 0.9em;
   color: #888;
   text-align: right;
 }
 
-/* 按讚區塊 */
+/* Like Section */
 .like-section {
   margin-top: 10px;
   text-align: right;
 }
 
-/* 按讚按鈕 */
+/* Like Button */
 .like-section button {
-  background-color: transparent;
-  border: none;
+  background-color: #f8f9fa; /* Light background */
+  border: 1px solid #ced4da; /* Border similar to Bootstrap's input */
   color: #f39c12;
   font-size: 1.1em;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.25rem;
 }
 
 .like-section button:hover {
+  background-color: #e2e6ea;
   color: #e67e22;
 }
 
-/* 新增留言按鈕 */
+/* Add Note Button */
 .add-note-button {
   position: fixed;
   bottom: 2vw;
   right: 2vw;
-  background-color: #f39c12;
+  /* background-color: #f39c12; */ /* Already using btn-primary */
   border: none;
   color: white;
   width: 50px;
@@ -184,36 +282,5 @@ export default {
   justify-content: center;
   align-items: center;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* 模態視窗背景 */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* 模態視窗 */
-.modal {
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  width: 300px;
-  text-align: center;
-}
-
-textarea {
-  width: 100%;
-  height: 100px;
-  margin-bottom: 10px;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
 }
 </style>

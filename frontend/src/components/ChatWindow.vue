@@ -12,13 +12,13 @@
         <input
           v-model="newMessage"
           @keyup.enter="send"
-          placeholder="Type your message..."
+          placeholder="輸入訊息..."
         />
-        <button @click="send" :disabled="sending">Send</button>
+        <button @click="send" :disabled="sending">送出</button>
       </div>
-      <div class="chat-footer">
+      <!-- <div class="chat-footer">
         <button @click="leaveRoom" class="leave-btn">Leave Room</button>
-      </div>
+      </div> -->
     </div>
   </template>
   
@@ -91,7 +91,7 @@
   .chat-window {
     display: flex;
     flex-direction: column;
-    height: 80vh;
+    height: 70vh;
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
