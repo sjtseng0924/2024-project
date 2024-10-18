@@ -4,15 +4,18 @@
       <h1 v-if="inRoom">Room: {{ roomName }}</h1>
       <h1 v-else>Chat Application</h1>
       <div v-if="isRegistered" class="navbar-right">
-        <p>Logged in as: <strong>{{ userName }}</strong></p>
-        <button @click="logout">Logout</button>
+        <p>Logged in as: <strong>{{ localUserName }}</strong></p>
+        <!-- <button @click="logout">Logout</button> -->
       </div>
     </nav>
 
-    <div v-if="!isRegistered" class="register-container">
-      <h2>Login</h2>
-      <input v-model="userName" placeholder="Enter your name" />
-      <button @click="login">Login</button>
+    <!-- Backdrop for login -->
+    <div v-if="!isRegistered" class="backdrop">
+      <div class="modal">
+        <h2>Login</h2>
+        <input v-model="localUserName" placeholder="Enter your name" />
+        <button @click="login">Login</button>
+      </div>
     </div>
 
     <div v-else>
@@ -24,7 +27,7 @@
 
       <div v-else>
         <ChatWindow 
-          :userName="userName" 
+          :userName="localUserName" 
           :roomName="roomName" 
           @left-room="handleRoomExit" 
         />
@@ -38,32 +41,42 @@ import { loginUser, createChatRoom } from "@/services/chatroom/chatroomService";
 import ChatWindow from "./ChatWindow.vue";
 
 export default {
+  props: ['isLoggedIn', 'userName'],
   components: {
     ChatWindow,
   },
   data() {
     return {
-      userName: "",
+      localUserName: this.userName, // Create a local variable for username
+      isRegistered: this.isLoggedIn,
       roomName: "",
-      isRegistered: false,
       inRoom: false,
     };
   },
+  watch: {
+    userName(newVal) {
+      this.localUserName = newVal;  
+    },
+    isLoggedIn(newVal) {
+      this.isRegistered = newVal;  
+    }
+  },
   methods: {
     async login() {
-      if (!this.userName.trim()) {
+      if (!this.localUserName.trim()) {
         alert("Please enter a username.");
         return;
       }
       try {
-        const result = await loginUser(this.userName);
+        const result = await loginUser(this.localUserName);
         if (result.status === "User already exists") {
           alert("Welcome back! Logging in...");
         } else {
           alert("User created successfully!");
         }
-        this.isRegistered = true;
-        localStorage.setItem("userName", this.userName);
+        this.$emit('login', this.localUserName);
+        
+        
       } catch (error) {
         alert(error.message || "Login failed.");
       }
@@ -87,25 +100,21 @@ export default {
       localStorage.removeItem("roomName");
     },
     logout() {
-      this.userName = "";
+      this.$emit('logout');
+      this.localUserName = "";
       this.roomName = "";
-      this.isRegistered = false;
       this.inRoom = false;
       localStorage.removeItem("userName");
       localStorage.removeItem("roomName");
     },
   },
   mounted() {
-    const savedUserName = localStorage.getItem("userName");
     const savedRoomName = localStorage.getItem("roomName");
-    if (savedUserName) {
-      this.userName = savedUserName;
-      this.isRegistered = true;
-    }
     if (savedRoomName) {
       this.roomName = savedRoomName;
       this.inRoom = true;
     }
+    
   },
 };
 </script>
@@ -206,10 +215,40 @@ button:hover {
   background-color: #555;
 }
 
-.room-header {
-  margin: 20px 0;
-  font-size: 22px;
-  color: #333;
-  font-weight: bold;
+/* Modal and Backdrop styling */
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
+.modal {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.modal h2 {
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+input {
+  width: 90%;
+  margin-bottom: 20px;
+}
+
+button {
+  width: 100px;
+}
+
 </style>
