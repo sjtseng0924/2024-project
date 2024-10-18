@@ -15,18 +15,25 @@ const routes = [
     path: '/chatapp',
     name: 'chatapp',
     component: ChatApp,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true,
+      title: '梅竹小天地 - 聊天室'
+     },
   },
   {
     path: '/sticky_note',
     name: 'stickynote',
     component: StickyNote,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true,
+      title: '梅竹小天地 - 留言板'
+     },
   },
   {
     path: '/map',
     name: 'map',
-    component: Map
+    component: Map,
+    meta: { requiresAuth: true,
+      title: '梅竹小天地 - 活動與地圖'
+     },
   },
   {
     path: '/login',
@@ -50,6 +57,10 @@ router.beforeEach((to, from, next) => {
   } else {
     next();
   }
+});
+
+router.afterEach((to) => {
+  document.title = to.meta.title || '梅竹小天地';
 });
 
 export default router;
