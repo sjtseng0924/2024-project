@@ -12,9 +12,9 @@
         <input
           v-model="newMessage"
           @keyup.enter="send"
-          placeholder="Type your message..."
+          placeholder="輸入訊息..."
         />
-        <button @click="send" :disabled="sending">Send</button>
+        <button @click="send" :disabled="sending">送出</button>
       </div>
       <!-- <div class="chat-footer">
         <button @click="leaveRoom" class="leave-btn">Leave Room</button>

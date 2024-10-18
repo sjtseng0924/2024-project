@@ -1,18 +1,18 @@
 <template>
   <div class="chat-app container mt-5" :class="{ 'center-room': !inRoom }">
     <div v-if="!inRoom" class="text-center">
-      <h2>Select or Create a Room</h2>
+      <h2>加入或新增聊天室</h2>
       <div class="input-group mb-3 mt-4">
-        <input v-model="roomName" type="text" class="form-control" placeholder="Enter room name" aria-label="Room Name" />
-        <button class="btn btn-dark" @click="joinRoom">Join Room</button>
+        <input v-model="roomName" type="text" class="form-control" placeholder="聊天室名稱" aria-label="Room Name" />
+        <button class="btn btn-dark" @click="joinRoom">加入</button>
       </div>
     </div>
 
     <div v-else>
       <div class="card">
         <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-          <h5>Room: {{ roomName }}</h5>
-          <button class="btn btn-outline-light" @click="handleRoomExit">Exit Room</button>
+          <h5>聊天室：{{ roomName }}</h5>
+          <button class="btn btn-outline-light" @click="handleRoomExit">離開</button>
         </div>
         <div class="card-body">
           <ChatWindow

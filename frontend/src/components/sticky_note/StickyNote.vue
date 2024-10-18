@@ -9,7 +9,7 @@
       <!-- Like Feature -->
       <div class="like-section">
         <button @click="likeNote(note.id)" class="btn btn-light">
-          👍 {{ note.likes }} Likes
+          👍 {{ note.likes }} 個讚
         </button>
       </div>
     </div>

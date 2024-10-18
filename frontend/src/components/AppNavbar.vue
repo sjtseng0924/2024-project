@@ -3,7 +3,7 @@
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
     <div class="container-fluid">
       <!-- Brand -->
-      <router-link class="navbar-brand" to="/">WebSiteName</router-link>
+      <router-link class="navbar-brand" to="/">梅竹小天地</router-link>
 
       <!-- Toggler/collapsible Button -->
       <button
@@ -23,13 +23,13 @@
         <!-- Center links -->
         <ul class="navbar-nav me-auto mb-2 mb-lg-0" v-if="isLoggedIn">
           <li class="nav-item">
-            <router-link class="nav-link" to="/chatapp">Chat App</router-link>
+            <router-link class="nav-link" to="/chatapp">聊天室</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/sticky_note">Note Board</router-link>
+            <router-link class="nav-link" to="/sticky_note">留言板</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/map">Map</router-link>
+            <router-link class="nav-link" to="/map">地圖與時程</router-link>
           </li>
         </ul>
 
@@ -37,13 +37,13 @@
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
           <!-- Login button -->
           <li class="nav-item" v-if="!isLoggedIn">
-            <router-link class="nav-link" to="/login">Login</router-link>
+            <router-link class="nav-link" to="/login">登入</router-link>
           </li>
 
           <!-- Username and Logout -->
           <li class="nav-item d-flex align-items-center" v-else>
             <span class="nav-link text-white">{{ userName }}</span>
-            <button @click="logout" class="btn btn-outline-light ms-2">Logout</button>
+            <button @click="logout" class="btn btn-outline-light ms-2">登出</button>
           </li>
         </ul>
       </div>
