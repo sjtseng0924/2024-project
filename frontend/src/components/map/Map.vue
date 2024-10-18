@@ -72,38 +72,44 @@ export default {
   },
   methods: {
     updateTime() {
-      const now = new Date();
-      const hours = now.getHours();
-      const minutes = now.getMinutes().toString().padStart(2, '0');
-      const formattedTime = `${hours}:${minutes}`;
+      let now = new Date();
+      // const hours = now.getHours();
+      // const minutes = now.getMinutes().toString().padStart(2, '0');
+      // const formattedTime = `${hours}:${minutes}`;
       const day = `${now.getMonth() + 1}/${now.getDate()}`;
 
-      // 更新目前時間
+      
       this.currentTime = `${this.formatAMPM(now)}`;
+      console.log(this.currentTime);
+      this.currentTimeFlat = now.getHours() * 60 + now.getMinutes();
+      console.log(this.currentTimeFlat)
 
-      // 根據當前時間檢查活動
-      this.updateCurrentEvent(day, formattedTime);
+      this.updateCurrentEvent(day, this.currentTimeFlat);
     },
     formatAMPM(date) {
       let hours = date.getHours();
       const minutes = date.getMinutes().toString().padStart(2, '0');
       const ampm = hours >= 12 ? 'pm' : 'am';
       hours = hours % 12;
-      hours = hours ? hours : 12; // 將0轉換為12
+      hours = hours ? hours : 12;
       const strTime = hours + ':' + minutes + ' ' + ampm;
       return strTime;
     },
-    updateCurrentEvent(day, currentTime) {
+    updateCurrentEvent(day, currentTimeFlat) {
       const schedule = this.eventSchedule[day];
 
-      if (!schedule) {
+      if (!schedule || (schedule && currentTimeFlat < 510)) {
         this.currentEvent = '活動尚未開始';
         return;
       }
 
       let eventFound = false;
       for (const event of schedule) {
-        if (currentTime >= event.start && currentTime < event.end) {
+        const [startHours, startMinutes] = event.start.split(':').map(Number);
+        const [endHours, endMinutes] = event.end.split(':').map(Number);
+        const eventStartFlat = startHours * 60 + startMinutes;
+        const eventEndFlat = endHours * 60 + endMinutes;
+        if (currentTimeFlat >= eventStartFlat && currentTimeFlat < eventEndFlat) {
           this.currentEvent = event.event;
           eventFound = true;
           break;
@@ -118,7 +124,7 @@ export default {
   mounted() {
     // 每分鐘更新一次時間和活動
     this.updateTime();
-    setInterval(this.updateTime, 60000);
+    setInterval(this.updateTime, 10000);
   },
 };
 </script>
