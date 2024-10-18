@@ -3,4 +3,8 @@ import App from './App.vue'
 import './assets/styles.css'; 
 import router from './router';
 
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap';
+
+
 createApp(App).use(router).mount('#app')
