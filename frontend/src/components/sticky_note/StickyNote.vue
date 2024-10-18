@@ -124,7 +124,7 @@ export default {
         // 發送到後端新增留言
         await createNote(newNote.content);
         this.newNoteContent = ''; 
-        this.showModal = false;   
+        this.closeModal();
         this.fetchNotes();      
       } catch (error) {
         alert(error.message || "新增留言失敗");
