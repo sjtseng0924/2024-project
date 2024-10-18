@@ -8,11 +8,11 @@ export const createNote = async (noteContent) => {
 };
 
 export const getAllNotes = async () => {
-  const response = await api.post(`/get/`);
+  const response = await api.get(`/get/`);
   return response.data;
 };
 
 export const findNote = async (NoteID) => {
-  const response = await api.post(`/get/${NoteID}/`);
+  const response = await api.get(`/get/${NoteID}/`);
   return response.data;
 };
