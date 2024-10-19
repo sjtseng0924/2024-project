@@ -70,57 +70,50 @@ export default {
       },
     };
   },
-  methods: {
-    updateTime() {
-      let now = new Date();
-      // const hours = now.getHours();
-      // const minutes = now.getMinutes().toString().padStart(2, '0');
-      // const formattedTime = `${hours}:${minutes}`;
-      const day = `${now.getMonth() + 1}/${now.getDate()}`;
+    methods: {
+      updateTime() {
+        let now = new Date();
+        now = new Date('2024-10-19T16:53:00');
+        const day = `${now.getMonth() + 1}/${now.getDate()}`;
+        this.currentTime = `${this.format24Hour(now)}`;
 
-      
-      this.currentTime = `${this.formatAMPM(now)}`;
-      console.log(this.currentTime);
-      this.currentTimeFlat = now.getHours() * 60 + now.getMinutes();
-      console.log(this.currentTimeFlat)
+        this.currentTimeFlat = now.getHours() * 60 + now.getMinutes();
 
-      this.updateCurrentEvent(day, this.currentTimeFlat);
-    },
-    formatAMPM(date) {
-      let hours = date.getHours();
-      const minutes = date.getMinutes().toString().padStart(2, '0');
-      const ampm = hours >= 12 ? 'pm' : 'am';
-      hours = hours % 12;
-      hours = hours ? hours : 12;
-      const strTime = hours + ':' + minutes + ' ' + ampm;
-      return strTime;
-    },
-    updateCurrentEvent(day, currentTimeFlat) {
-      const schedule = this.eventSchedule[day];
+        this.updateCurrentEvent(day, this.currentTimeFlat);
+      },
 
-      if (!schedule || (schedule && currentTimeFlat < 510)) {
-        this.currentEvent = '活動尚未開始';
-        return;
-      }
+      format24Hour(date) {
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+      },
 
-      let eventFound = false;
-      for (const event of schedule) {
-        const [startHours, startMinutes] = event.start.split(':').map(Number);
-        const [endHours, endMinutes] = event.end.split(':').map(Number);
-        const eventStartFlat = startHours * 60 + startMinutes;
-        const eventEndFlat = endHours * 60 + endMinutes;
-        if (currentTimeFlat >= eventStartFlat && currentTimeFlat < eventEndFlat) {
-          this.currentEvent = event.event;
-          eventFound = true;
-          break;
+      updateCurrentEvent(day, currentTimeFlat) {
+        const schedule = this.eventSchedule[day];
+
+        if (!schedule || (schedule && currentTimeFlat < 510)) {
+          this.currentEvent = '活動尚未開始';
+          return;
         }
-      }
 
-      if (!eventFound) {
-        this.currentEvent = '活動已結束';
-      }
+        let eventFound = false;
+        for (const event of schedule) {
+          const [startHours, startMinutes] = event.start.split(':').map(Number);
+          const [endHours, endMinutes] = event.end.split(':').map(Number);
+          const eventStartFlat = startHours * 60 + startMinutes;
+          const eventEndFlat = endHours * 60 + endMinutes;
+          if (currentTimeFlat >= eventStartFlat && currentTimeFlat < eventEndFlat) {
+            this.currentEvent = event.event;
+            eventFound = true;
+            break;
+          }
+        }
+
+        if (!eventFound) {
+          this.currentEvent = '活動已結束';
+        }
+      },
     },
-  },
   mounted() {
     // 每分鐘更新一次時間和活動
     this.updateTime();
@@ -153,6 +146,7 @@ export default {
 
 .time {
   font-size: 18px;
+  margin-right: 10px;
 }
 
 .event {
